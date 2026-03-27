@@ -1,0 +1,12 @@
+[project]
+name = "text-tagging"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "maturin>=1.12.6",
+    "pip>=26.0.1",
+    "scikit-learn>=1.4.0",
+    "spacy>=3.7.0",
+]

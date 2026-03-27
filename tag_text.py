@@ -9,11 +9,21 @@ from collections import defaultdict
 from typing import Any, Iterable, List
 
 
+STOP_POS = {
+    "PUNCT",
+    "SYM",
+    "SPACE",
+    "AUX",
+    "ADP",
+    "PART",
+    "CCONJ",
+    "SCONJ",
+    "DET",
+    "PRON",
+}
 
-STOP_POS = {"PUNCT", "SYM", "SPACE", "AUX", "ADP", "PART", "CCONJ", "SCONJ", "DET", "PRON"}
 
-
-def load_nlp(model_name: str = "ja_core_news_sm"):
+def load_nlp(model_name: str = "ja_core_news_lg"):
     try:
         import spacy
 
@@ -21,7 +31,7 @@ def load_nlp(model_name: str = "ja_core_news_sm"):
     except OSError as exc:
         raise SystemExit(
             "spaCy の日本語モデルが見つかりません。\n"
-            "次のコマンドでインストールしてください: python -m spacy download ja_core_news_sm"
+            "次のコマンドでインストールしてください: python -m spacy download ja_core_news_lg"
         ) from exc
     except ModuleNotFoundError as exc:
         raise SystemExit(
@@ -67,7 +77,9 @@ def build_corpus_from_sentences(doc: Any) -> List[str]:
     return []
 
 
-def extract_top_keywords_from_corpus(corpus: Iterable[str], top_n: int = 5) -> List[str]:
+def extract_top_keywords_from_corpus(
+    corpus: Iterable[str], top_n: int = 5
+) -> List[str]:
     corpus_list = [item for item in corpus if item.strip()]
     if not corpus_list:
         return []
@@ -80,7 +92,9 @@ def extract_top_keywords_from_corpus(corpus: Iterable[str], top_n: int = 5) -> L
             "次のコマンドでインストールしてください: pip install -r requirements.txt"
         ) from exc
 
-    vectorizer = TfidfVectorizer(token_pattern=r"(?u)\b\w+\b", norm="l2", sublinear_tf=True)
+    vectorizer = TfidfVectorizer(
+        token_pattern=r"(?u)\b\w+\b", norm="l2", sublinear_tf=True
+    )
     matrix = vectorizer.fit_transform(corpus_list)
 
     feature_names = vectorizer.get_feature_names_out()
@@ -100,7 +114,9 @@ def parse_args() -> argparse.Namespace:
         description="spaCy で日本語を解析し、TF-IDF で重要キーワードを抽出します。"
     )
     parser.add_argument("text", nargs="?", help="解析したい日本語テキスト")
-    parser.add_argument("--top-n", type=int, default=5, help="抽出するキーワード数 (デフォルト: 5)")
+    parser.add_argument(
+        "--top-n", type=int, default=5, help="抽出するキーワード数 (デフォルト: 5)"
+    )
     return parser.parse_args()
 
 
@@ -109,7 +125,9 @@ def main() -> None:
     text = args.text if args.text is not None else sys.stdin.read().strip()
 
     if not text:
-        raise SystemExit("テキストが空です。引数または標準入力で日本語テキストを指定してください。")
+        raise SystemExit(
+            "テキストが空です。引数または標準入力で日本語テキストを指定してください。"
+        )
     if args.top_n <= 0:
         raise SystemExit("--top-n には 1 以上の整数を指定してください。")
 
