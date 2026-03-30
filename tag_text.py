@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""spaCy + scikit-learn による日本語テキストのタグ付けサンプル。"""
-
 from __future__ import annotations
 
 import argparse
@@ -122,17 +120,20 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    text = args.text if args.text is not None else sys.stdin.read().strip()
+    text_file = args.text
 
-    if not text:
-        raise SystemExit(
-            "テキストが空です。引数または標準入力で日本語テキストを指定してください。"
-        )
+    if not text_file:
+        raise SystemExit("text file is not found")
     if args.top_n <= 0:
         raise SystemExit("--top-n には 1 以上の整数を指定してください。")
 
+    text = ""
+    with open(text_file, "r") as f:
+        text = f.read()
+
     nlp = load_nlp()
     doc = nlp(text)
+    print(doc)
     corpus = build_corpus_from_sentences(doc)
     keywords = extract_top_keywords_from_corpus(corpus, top_n=args.top_n)
 
